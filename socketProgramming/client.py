@@ -26,3 +26,5 @@ send("Hello Everyone!")
 input()
 send("Hello Yazan!")
 send(DISCONNECT_MESSAGE)
+
+client.close()
