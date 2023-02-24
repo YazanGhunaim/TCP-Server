@@ -436,7 +436,7 @@ tester <port number> <remote address> [test number(s)]
 The first parameter is the port number on which your server will listen. The following is a parameter with the server remote address. If your server is running on the same computer as VirtualBox, use the default gateway address. The procedure is shown in the following figure:
 
 
-![tester]https://github.com/YazanGhunaim/TCP-Server/edit/main/testing-image-example.png)
+![tester](https://github.com/YazanGhunaim/TCP-Server/edit/main/testing-image-example.png)
 
 
 testing image example
