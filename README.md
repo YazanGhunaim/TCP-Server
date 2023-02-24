@@ -154,11 +154,11 @@ Time Constants:
 
 <tr class="row0">
 
-<th class="col0">Název</th>
+<th class="col0">Name</th>
 
-<th class="col1">Hodota [s]</th>
+<th class="col1">Value [s]</th>
 
-<th class="col2">Popis</th>
+<th class="col2">Description</th>
 
 </tr>
 
@@ -168,7 +168,7 @@ Time Constants:
 
 <td class="col1">1</td>
 
-<td class="col2">Server i klient očekávají od protistrany odpověď po dobu tohoto intervalu.</td>
+<td class="col2">Server and client wait for the answer from the other side during this interval.</td>
 
 </tr>
 
@@ -178,7 +178,7 @@ Time Constants:
 
 <td class="col1">5</td>
 
-<td class="col2">Časový interval, během kterého musí robot dokončit dobíjení.</td>
+<td class="col2">Time interval, during which robot has to finish recharging.</td>
 
 </tr>
 
