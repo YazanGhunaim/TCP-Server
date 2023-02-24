@@ -19,27 +19,24 @@ def handle_client(conn, addr):
     # fork returns process id of the child - stored in the parent
     child_pid = os.fork()
 
-    connected = True
-    while connected:
-        if child_pid != 0:  # we are in the parent thread
-            conn.close()
-            continue
+    if child_pid != 0:  # we are in the parent thread
+        conn.close()
 
-        # server.close()
+    # server.close()
 
-        print(addr)
-        conn.settimeout(10)
-        try:
-            data = conn.recv(1024).decode()
-            print(data)
-            sleep(10)
-            server_confirmation(conn)
-            conn.close()
-            break
+    print(addr)
+    conn.settimeout(10)
+    try:
+        data = conn.recv(1024).decode()
+        print(data)
+        sleep(10)
+        server_confirmation(conn)
+        conn.close()
+        return
 
-        except socket.timeout as e:
-            print("Timeout!")
-            conn.close()
+    except socket.timeout as e:
+        print("Timeout!")
+        conn.close()
 
 
 def start():
