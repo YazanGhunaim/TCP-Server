@@ -482,24 +482,43 @@ In the part of communication where robot is navigated to the target coordinates,
 # Demo communication
 
 C: "Oompa Loompa\a\b"
+
 S: "107 KEY REQUEST\a\b"
+
 C: "0\a\b"
+
 S: "64907\a\b"
+
 C: "8389\a\b"
+
 S: "200 OK\a\b"
+
 S: "102 MOVE\a\b"
+
 C: "OK 0 0\a\b"
+
 S: "102 MOVE\a\b"
+
 C: "OK -1 0\a\b"
+
 S: "104 TURN RIGHT\a\b"
+
 C: "OK -1 0\a\b"
+
 S: "104 TURN RIGHT\a\b"
+
 C: "OK -1 0\a\b"
+
 S: "102 MOVE\a\b"
+
 C: "OK 0 0\a\b"
+
 S: "105 GET MESSAGE\a\b"
+
 C: "Secret message.\a\b"
+
 S: "106 LOGOUT\a\b"
+
 
 # Testing
 
