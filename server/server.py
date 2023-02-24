@@ -1,6 +1,5 @@
 import socket
 import threading
-from time import sleep
 from constants import *
 from helperFunctions import *
 
@@ -22,6 +21,11 @@ def handle_client(conn, addr):
 
         # Sending SERVER_KEY_REQUEST
         conn.send(SERVER_KEY_REQUEST.encode())
+
+        # Getting CLIENT_KEY_ID
+        CLIENT_KEY_ID = conn.recv(1024).decode()
+        # calculating hashcode of username
+        usernameHash = clientUserNameHashCode(CLIENT_USERNAME)
         conn.close()
         return
 
