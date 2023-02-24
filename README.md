@@ -251,18 +251,31 @@ Client confirmation key is sent to the server in CLIENT_CONFIRMATION message, se
 
 
 Client                  Server
+
 ​------------------------------------------
+
 CLIENT_USERNAME     --->
+
                     <---    SERVER_KEY_REQUEST
+                    
 CLIENT_KEY_ID       --->
+
                     <---    SERVER_CONFIRMATION
+                    
 CLIENT_CONFIRMATION --->
+
                     <---    SERVER_OK
+                    
                               or
+                              
                             SERVER_LOGIN_FAILED
+                            
                       .
+                      
                       .
+                      
                       .
+                      
 
 
 Server does not know usernames in advance. Robots can choose any name, but they have to know the list of client and server keys. The key pair ensures two-sided autentication and prevents the autentication process from being compromised by simple eavesdropping of communication.
@@ -272,30 +285,55 @@ Server does not know usernames in advance. Robots can choose any name, but they 
 Robot can move only straight (SERVER_MOVE), but is able to turn right (SERVER_TURN_RIGHT) or left (SERVER_TURN_LEFT). After each move command robot sends confirmation (CLIENT_OK), part of which is actual coordinates of robot. At the beginning of communication robot position is not known to server. Server must find out robot position and orientation (direction) only from robot answers. In order to prevent infinite wandering of robot in space, each robot has a limited number of movements (move forward). The number of turns is not limited. The number of moves should be sufficient for a reasonable robot transfer to the target. Following is a demonstration of communication. The server first moves the robot twice to detect its current state and then guides it towards the target coordinate [0,0].
 
 Client                  Server
+
 ​------------------------------------------
+
                   .
+                  
                   .
+                  
                   .
+                  
                 <---    SERVER_MOVE
+                
                           or
+                          
                         SERVER_TURN_LEFT
+                        
                           or
+                          
                         SERVER_TURN_RIGHT
+                        
 CLIENT_CONFIRM  --->
+
                 <---    SERVER_MOVE
+                
                           or
+                          
                         SERVER_TURN_LEFT
+                        
                           or
+                          
                         SERVER_TURN_RIGHT
+                        
 CLIENT_CONFIRM  --->
+
                 <---    SERVER_MOVE
+                
                           or
+                          
                         SERVER_TURN_LEFT
+                        
                           or
+                          
                         SERVER_TURN_RIGHT
+                        
                   .
+                  
                   .
+                  
                   .
+                  
 
 This part of communication cannot be skipped, robot waits at least one of the movement commands - SERVER_MOVE, SERVER_TURN_LEFT or SERVER_TURN_RIGHT. There is several obstactles on the way to the target coordinate, which must be bypassed by the robots. The obstacle placement follows these rules:
 
@@ -310,52 +348,91 @@ The obstacle is detected by the fact that robot doesn’t change it’s position
 After the robot reaches the target coordinate [0,0], it attemps to pick up the secret message (SERVER_PICK_UP). If robot receives command to pick up the secret message, but robot is not in the target coordinate [0,0], an autodestruction of robot is initiated and communication with server is abrupted. After the robot picks the secret message, it sends to the server CLIENT_MESSAGE with the secret. The server has to answer with SERVER_LOGOUT. (It is guaranteed, that secret message never matches the message CLIENT_RECHARGING, so if the recharge message is obtained by the server after the pick up command, it always means that robot started to charge.) After that, client and server close the connection. Demo of the secret message picking:
 
 Client                  Server
+
 ​------------------------------------------
+
                   .
+                  
                   .
+                  
                   .
+                  
                 <---    SERVER_PICK_UP
+                
 CLIENT_MESSAGE  --->
+
                 <---    SERVER_LOGOUT
+                
+                
 # Recharging
 
 Each robot has a limited power source. If it starts to run out of battery, he notifies the server and then recharges itself from the solar panel. It does not respond to any messages during the charging. When it finishes, it informs the server and continues there, where it left before recharging. If the robot does not stop charging in the time interval TIMEOUT_RECHARGING, the server terminates the connection.
 
 Client                    Server
+
 ​------------------------------------------
+
 CLIENT_USERNAME   --->
+
                   <---    SERVER_CONFIRMATION
+                  
 CLIENT_RECHARGING --->
 
+
+
       ...
+      
 
 CLIENT_FULL_POWER --->
+
 CLIENT_OK         --->
+
                   <---    SERVER_OK
+                  
                             or
+                            
                           SERVER_LOGIN_FAILED
+                          
                     .
+                    
                     .
+                    
                     .
+                    
 Another example:
 
 Client                  Server
+
 ​------------------------------------------
+
                     .
+                    
                     .
+                    
                     .
+                    
                   <---    SERVER_MOVE
+                  
 CLIENT_OK         --->
+
 CLIENT_RECHARGING --->
+
 
       ...
 
+
 CLIENT_FULL_POWER --->
+
                   <---    SERVER_MOVE
+                  
 CLIENT_OK         --->
+
                   .
+                  
                   .
+                  
                   .
+                  
 # Error situations
 
 Some robots can have corrupted firmware and thus communicate wrongly. Server should detect misbehavior and react correctly.
