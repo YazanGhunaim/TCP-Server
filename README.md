@@ -231,13 +231,13 @@ Server and client both know five pairs of authentication keys (these are not pub
 
 Each robot starts communictation with sending its username (CLIENT_USERNAME message). Username can be any sequence of up to 18 characters not containing the termination sequence „\a\b“. In the next step the server asks the client for sending Key ID (SERVER_KEY_ID_REQUEST message), which is in fact an id of the server and client keys, which the client wants to use for authentication. The client answers by sending Key ID (CLIENT_KEY_ID message). After these steps the server knows the correct key pair and it can calculate "hash" code from the username of the client by the following formula:
 
-//----------------------------------------------------------------//
+
 Username: Meow!
 
 ASCII representation: 77 101 111 119 33
 
 Resulting hash: ((77 + 101 + 111 + 119 + 33) * 1000) % 65536 = 47784
-//----------------------------------------------------------------//
+
 
 Resulting hash is 16-bit number in decimal notation. The server then adds a server key to the hash, so that if 16-bit capacity is exceeded, the value simply "wraps around" (due to modulo operation):
 
