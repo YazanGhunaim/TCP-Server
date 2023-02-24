@@ -1,4 +1,3 @@
-import os
 import socket
 import threading
 from time import sleep
@@ -6,7 +5,7 @@ from constants import *
 from helperFunctions import *
 
 HEADER = 64
-PORT = 6667
+PORT = 5050
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -16,21 +15,13 @@ server.bind(ADDR)
 
 
 def handle_client(conn, addr):
-    # fork returns process id of the child - stored in the parent
-    child_pid = os.fork()
-
-    if child_pid != 0:  # we are in the parent thread
-        conn.close()
-
-    # server.close()
-
     print(addr)
     conn.settimeout(10)
     try:
-        data = conn.recv(1024).decode()
-        print(data)
-        sleep(10)
-        server_confirmation(conn)
+        CLIENT_USERNAME = conn.recv(1024).decode()
+
+        # Sending SERVER_KEY_REQUEST
+        conn.send(SERVER_KEY_REQUEST.encode())
         conn.close()
         return
 

@@ -7,3 +7,4 @@ SERVER_CLIENT_KEYS = {
     4: {'Server key': 18189, 'Client Key': 21952}
 }
 
+SERVER_KEY_REQUEST = "107 KEY REQUEST\a\b"
