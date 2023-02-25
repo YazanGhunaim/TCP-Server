@@ -1,10 +1,20 @@
 from constants import *
 
 
-def clientUserNameHashCode(username, key_id):
+def keyInRange(key_id):
+    if key_id < 0 or key_id > 4:
+        return False
+    return True
 
+
+def clientUserNameHashCode(username, key_id, conn):
     # rstrip method removes any occurences of specified characters then converted to integer
     key_id = int(key_id.rstrip('\a\b'))
+
+    if keyInRange(key_id) == False:
+        conn.send(SERVER_KEY_OUT_OF_RANGE_ERROR.encode())
+        conn.close()
+
     try:
         hashcode = 0
         for i in range(len(username) - 2):
@@ -33,7 +43,8 @@ def hashCompare(hash1, hash2):
     hash1 = int(hash1.rstrip('\a\b'))
     return SERVER_OK if hash1 == hash2 else SERVER_LOGIN_FAILED
 
+
 def extractCoordinates(coordinates):
     x = int(coordinates.split()[1])
     y = int(coordinates.split()[2].rstrip('\a\b'))
-    return x,y
+    return x, y

@@ -4,7 +4,7 @@ from constants import *
 from helperFunctions import *
 
 HEADER = 64
-PORT = 5050
+PORT = 6667
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -26,14 +26,15 @@ def handle_client(conn, addr):
 
         # calculating hashcode of username
         expectedHashReturn, usernameHash = clientUserNameHashCode(
-            CLIENT_USERNAME, CLIENT_KEY_ID)
+            CLIENT_USERNAME, CLIENT_KEY_ID, conn)
 
         # sending resultant hashcode to client
         conn.send(usernameHash.encode())
         returnHash = conn.recv(1024).decode()
 
         # Sending Suitable Client Confirmation Message
-        CLIENT_CONFIRMATION_MESSAGE = hashCompare(returnHash, expectedHashReturn)
+        CLIENT_CONFIRMATION_MESSAGE = hashCompare(
+            returnHash, expectedHashReturn)
 
         # If Log In Fails -> close the server
         if CLIENT_CONFIRMATION_MESSAGE == SERVER_LOGIN_FAILED:
