@@ -14,7 +14,6 @@ server.bind(ADDR)
 
 
 def handle_client(conn, addr):
-    print(addr)
     conn.settimeout(10)
     try:
         CLIENT_USERNAME = conn.recv(1024).decode()
@@ -25,7 +24,8 @@ def handle_client(conn, addr):
         # Getting CLIENT_KEY_ID
         CLIENT_KEY_ID = conn.recv(1024).decode()
         # calculating hashcode of username
-        usernameHash = clientUserNameHashCode(CLIENT_USERNAME)
+        usernameHash = clientUserNameHashCode(CLIENT_USERNAME, CLIENT_KEY_ID)
+        print(usernameHash)
         conn.close()
         return
 
@@ -42,4 +42,5 @@ def start():
         thread.start()
 
 
-start()
+# start()
+temp_hash, hashcode = clientUserNameHashCode("Oompa Loompa\a\b", 0)
