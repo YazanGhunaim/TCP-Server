@@ -26,7 +26,7 @@ def handle_client(conn, addr):
         # calculating hashcode of username
         expectedHashReturn, usernameHash = clientUserNameHashCode(
             CLIENT_USERNAME, CLIENT_KEY_ID)
-        
+
         conn.send(usernameHash.encode())
         conn.close()
         return
@@ -39,9 +39,13 @@ def handle_client(conn, addr):
 def start():
     server.listen(10)
     while True:
-        conn, address = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, address))
-        thread.start()
+        try:
+            conn, address = server.accept()
+            thread = threading.Thread(
+                target=handle_client, args=(conn, address))
+            thread.start()
+        except socket.error as e:
+            print(f"Error accepting connection: {e}")
 
 
 start()
