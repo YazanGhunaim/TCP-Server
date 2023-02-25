@@ -4,7 +4,7 @@ from constants import *
 from helperFunctions import *
 
 HEADER = 64
-PORT = 6668
+PORT = 6666
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -23,15 +23,23 @@ def handle_client(conn, addr):
 
         # Getting CLIENT_KEY_ID
         CLIENT_KEY_ID = conn.recv(1024).decode()
+
         # calculating hashcode of username
         expectedHashReturn, usernameHash = clientUserNameHashCode(
             CLIENT_USERNAME, CLIENT_KEY_ID)
 
-        #sending resultant hashcode to client
+        # sending resultant hashcode to client
         conn.send(usernameHash.encode())
-
         returnHash = conn.recv(1024).decode()
+
+        # Sending Suitable Client Confirmation Message
         conn.send(hashCompare(returnHash,expectedHashReturn).encode())
+
+        # Commanding the Robot Client To Move
+        conn.send(SERVER_MOVE.encode())
+        # Recieving robot co-ordinates
+        coordinates = conn.recv(1024).decode()
+        extractCoordinates(coordinates)
         conn.close()
         return
 

@@ -31,6 +31,13 @@ def clientUserNameHashCode(username, key_id):
 def hashCompare(hash1, hash2):
     # hash1 is the actual returned hash from the client
     hash1 = int(hash1.rstrip('\a\b'))
-    print(repr(hash1))
-    print(repr(hash2))
     return SERVER_OK if hash1 == hash2 else SERVER_LOGIN_FAILED
+
+def extractCoordinates(coordinates):
+    x = coordinates.split()[1]
+    y = coordinates.split()[2]
+
+    # x = int(x)
+    # y = int(y)
+
+    print(x,y)
