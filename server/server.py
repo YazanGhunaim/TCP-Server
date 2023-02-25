@@ -4,7 +4,7 @@ from constants import *
 from helperFunctions import *
 
 HEADER = 64
-PORT = 6666
+PORT = 5050
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -33,13 +33,27 @@ def handle_client(conn, addr):
         returnHash = conn.recv(1024).decode()
 
         # Sending Suitable Client Confirmation Message
-        conn.send(hashCompare(returnHash,expectedHashReturn).encode())
+        CLIENT_CONFIRMATION_MESSAGE = hashCompare(returnHash, expectedHashReturn)
+
+        # If Log In Fails -> close the server
+        if CLIENT_CONFIRMATION_MESSAGE == SERVER_LOGIN_FAILED:
+            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+            conn.close()
+        else:
+            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
 
         # Commanding the Robot Client To Move
         conn.send(SERVER_MOVE.encode())
         # Recieving robot co-ordinates
         coordinates = conn.recv(1024).decode()
-        extractCoordinates(coordinates)
+        x, y = extractCoordinates(coordinates)
+
+        if x == 0 and y == 0:
+            conn.send(SERVER_PICK_UP.encode())
+
+        # Commanding Client to log out after secret message discovery
+        conn.send(SERVER_LOGOUT.encode())
+
         conn.close()
         return
 
