@@ -24,8 +24,10 @@ def handle_client(conn, addr):
         # Getting CLIENT_KEY_ID
         CLIENT_KEY_ID = conn.recv(1024).decode()
         # calculating hashcode of username
-        usernameHash = clientUserNameHashCode(CLIENT_USERNAME, CLIENT_KEY_ID)
-        print(usernameHash)
+        expectedHashReturn, usernameHash = clientUserNameHashCode(
+            CLIENT_USERNAME, CLIENT_KEY_ID)
+        
+        conn.send(usernameHash.encode())
         conn.close()
         return
 
@@ -42,5 +44,4 @@ def start():
         thread.start()
 
 
-# start()
-temp_hash, hashcode = clientUserNameHashCode("Oompa Loompa\a\b", 0)
+start()
