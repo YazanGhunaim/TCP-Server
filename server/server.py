@@ -4,7 +4,7 @@ from constants import *
 from helperFunctions import *
 
 HEADER = 64
-PORT = 5050
+PORT = 6668
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -27,7 +27,11 @@ def handle_client(conn, addr):
         expectedHashReturn, usernameHash = clientUserNameHashCode(
             CLIENT_USERNAME, CLIENT_KEY_ID)
 
+        #sending resultant hashcode to client
         conn.send(usernameHash.encode())
+
+        returnHash = conn.recv(1024).decode()
+        conn.send(hashCompare(returnHash,expectedHashReturn).encode())
         conn.close()
         return
 

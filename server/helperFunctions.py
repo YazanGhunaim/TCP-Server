@@ -2,6 +2,9 @@ from constants import *
 
 
 def clientUserNameHashCode(username, key_id):
+
+    # rstrip method removes any occurences of specified characters then converted to integer
+    key_id = int(key_id.rstrip('\a\b'))
     try:
         hashcode = 0
         for i in range(len(username) - 2):
@@ -17,6 +20,7 @@ def clientUserNameHashCode(username, key_id):
         hashcode = (hashcode + server_key) % 65536
         expected = (expected + client_key) % 65536
 
+        hashcode = str(hashcode) + '\a\b'
         return expected, hashcode
 
     except KeyError as e:
@@ -25,4 +29,8 @@ def clientUserNameHashCode(username, key_id):
 
 
 def hashCompare(hash1, hash2):
+    # hash1 is the actual returned hash from the client
+    hash1 = int(hash1.rstrip('\a\b'))
+    print(repr(hash1))
+    print(repr(hash2))
     return SERVER_OK if hash1 == hash2 else SERVER_LOGIN_FAILED
