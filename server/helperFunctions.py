@@ -1,4 +1,5 @@
 import constants
+import itertools
 
 
 def keyInRange(key_id):
@@ -47,30 +48,24 @@ def hashCompare(hash1, hash2):
 def extractCoordinates(coordinates, conn):
     x = int(coordinates.split()[1])
     y = int(coordinates.split()[2].rstrip('\a\b'))
-    status = handleMovement(x, y, conn)
-
-    # print(status)
-    # if status == True:
-        # conn.close()
+    handleMovement(x, y, conn)
 
 
 def handleMovement(x, y, conn):
 
     if (y > 0):
-        while (y != 0):
-            print(y)
-            y -= 1
+        for _ in itertools.repeat(None, y):
             conn.send(constants.SERVER_MOVE.encode())
+            y -= 1
 
     if (x > 0):
         conn.send(constants.SERVER_TURN_RIGHT.encode())
-        while (x != 0):
+        for _ in itertools.repeat(None, x):
+            status = conn.send(constants.SERVER_MOVE.encode())
+            print(status)
             x -= 1
-            conn.send(constants.SERVER_MOVE.encode())
 
     if x == 0 and y == 0:
         conn.send(constants.SERVER_PICK_UP.encode())
         conn.send(constants.SERVER_LOGOUT.encode())
-        return True
-    else:
-        return False
+        conn.close()

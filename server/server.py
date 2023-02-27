@@ -5,7 +5,7 @@ import constants
 
 
 HEADER = 64
-PORT = 6666
+PORT = 6667
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -31,6 +31,7 @@ def handle_client(conn, addr):
 
         # sending resultant hashcode to client
         conn.send(usernameHash.encode())
+        # time.sleep(constants.TIMEOUT)
         returnHash = conn.recv(1024).decode()
 
         # Sending Suitable Client Confirmation Message
