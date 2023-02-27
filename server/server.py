@@ -1,10 +1,11 @@
 import socket
 import threading
-from constants import *
-from helperFunctions import *
+import helperFunctions
+import constants
+
 
 HEADER = 64
-PORT = 6667
+PORT = 6666
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -19,13 +20,13 @@ def handle_client(conn, addr):
         CLIENT_USERNAME = conn.recv(1024).decode()
 
         # Sending SERVER_KEY_REQUEST
-        conn.send(SERVER_KEY_REQUEST.encode())
+        conn.send(constants.SERVER_KEY_REQUEST.encode())
 
         # Getting CLIENT_KEY_ID
         CLIENT_KEY_ID = conn.recv(1024).decode()
 
         # calculating hashcode of username
-        expectedHashReturn, usernameHash = clientUserNameHashCode(
+        expectedHashReturn, usernameHash = helperFunctions.clientUserNameHashCode(
             CLIENT_USERNAME, CLIENT_KEY_ID, conn)
 
         # sending resultant hashcode to client
@@ -33,29 +34,22 @@ def handle_client(conn, addr):
         returnHash = conn.recv(1024).decode()
 
         # Sending Suitable Client Confirmation Message
-        CLIENT_CONFIRMATION_MESSAGE = hashCompare(
+        CLIENT_CONFIRMATION_MESSAGE = helperFunctions.hashCompare(
             returnHash, expectedHashReturn)
 
         # If Log In Fails -> close the server
-        if CLIENT_CONFIRMATION_MESSAGE == SERVER_LOGIN_FAILED:
+        if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
             conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
             conn.close()
         else:
             conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
 
         # Commanding the Robot Client To Move
-        conn.send(SERVER_MOVE.encode())
+        conn.send(constants.SERVER_MOVE.encode())
         # Recieving robot co-ordinates
         coordinates = conn.recv(1024).decode()
-        x, y = extractCoordinates(coordinates)
+        x, y = helperFunctions.extractCoordinates(coordinates, conn)
 
-        if x == 0 and y == 0:
-            conn.send(SERVER_PICK_UP.encode())
-
-        # Commanding Client to log out after secret message discovery
-        conn.send(SERVER_LOGOUT.encode())
-
-        conn.close()
         return
 
     except socket.timeout as e:
