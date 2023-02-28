@@ -59,14 +59,20 @@ def return_hash(conn):
 
 # Sending Suitable Client Confirmation Message
 def client_confirmation_message(conn, returnHash, expectedHashReturn):
+    try:
+        CLIENT_CONFIRMATION_MESSAGE = hashCompare(
+            returnHash, expectedHashReturn)
 
-    CLIENT_CONFIRMATION_MESSAGE = hashCompare(returnHash, expectedHashReturn)
-
-    if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
-        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+        if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
+            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+            conn.close()
+            return False
+        else:
+            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+            return True
+    except Exception as e:
         conn.close()
-    else:
-        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+        return False
 
 
 def authentication(conn):
@@ -117,4 +123,5 @@ def handleMovement(conn):
             time.sleep(constants.TIMEOUT_PRECISION)
             x -= 1
 
-    pickup_message(conn)
+    if (x == 0 and y == 0):
+        pickup_message(conn)
