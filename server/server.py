@@ -4,11 +4,10 @@ import helperFunctions
 import constants
 
 
-HEADER = 64
 PORT = 6667
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "!DISCONNECT"
+
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
@@ -31,7 +30,6 @@ def handle_client(conn, addr):
 
         # sending resultant hashcode to client
         conn.send(usernameHash.encode())
-        # time.sleep(constants.TIMEOUT)
         returnHash = conn.recv(1024).decode()
 
         # Sending Suitable Client Confirmation Message
@@ -45,11 +43,11 @@ def handle_client(conn, addr):
         else:
             conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
 
-        # Commanding the Robot Client To Move
+        # Commanding the Robot Clixent To Move
         conn.send(constants.SERVER_MOVE.encode())
         # Recieving robot co-ordinates
         coordinates = conn.recv(1024).decode()
-        x, y = helperFunctions.extractCoordinates(coordinates, conn)
+        helperFunctions.extractCoordinates(coordinates, conn)
 
         return
 

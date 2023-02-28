@@ -61,11 +61,10 @@ def handleMovement(x, y, conn):
     if (x > 0):
         conn.send(constants.SERVER_TURN_RIGHT.encode())
         for _ in itertools.repeat(None, x):
-            status = conn.send(constants.SERVER_MOVE.encode())
-            print(status)
+            conn.send(constants.SERVER_MOVE.encode())
             x -= 1
 
     if x == 0 and y == 0:
         conn.send(constants.SERVER_PICK_UP.encode())
         conn.send(constants.SERVER_LOGOUT.encode())
-        conn.close()
+        # conn.close()
