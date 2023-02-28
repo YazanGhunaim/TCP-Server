@@ -2,6 +2,7 @@ import constants
 import itertools
 import time
 import constants
+import socket
 
 
 def keyInRange(key_id):
@@ -47,6 +48,27 @@ def hashCompare(hash1, hash2):
     return constants.SERVER_OK if hash1 == hash2 else constants.SERVER_LOGIN_FAILED
 
 
+def return_hash(conn):
+    # closing the connection if client confirmation is not sent within 1 second
+    conn.settimeout(constants.TIMEOUT)
+    try:
+        return conn.recv(1024).decode()
+    except socket.timeout:
+        conn.close()
+
+
+# Sending Suitable Client Confirmation Message
+def client_confirmation_message(conn, returnHash, expectedHashReturn):
+
+    CLIENT_CONFIRMATION_MESSAGE = hashCompare(returnHash, expectedHashReturn)
+
+    if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
+        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+        conn.close()
+    else:
+        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+
+
 def authentication(conn):
 
     CLIENT_USERNAME = conn.recv(1024).decode()
@@ -63,18 +85,11 @@ def authentication(conn):
 
     # sending resultant hashcode to client
     conn.send(usernameHash.encode())
-    returnHash = conn.recv(1024).decode()
 
-    # Sending Suitable Client Confirmation Message
-    CLIENT_CONFIRMATION_MESSAGE = hashCompare(
-        returnHash, expectedHashReturn)
+    returnHash = return_hash(conn)
 
     # If Log In Fails -> close the server
-    if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
-        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
-        conn.close()
-    else:
-        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+    client_confirmation_message(conn, returnHash, expectedHashReturn)
 
 
 def pickup_message(conn):

@@ -2,7 +2,7 @@ import socket
 import threading
 import helperFunctions
 
-PORT = 6667
+PORT = 6666
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 
