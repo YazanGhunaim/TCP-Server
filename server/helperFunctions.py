@@ -1,5 +1,7 @@
 import constants
 import itertools
+import time
+import constants
 
 
 def keyInRange(key_id):
@@ -45,27 +47,59 @@ def hashCompare(hash1, hash2):
     return constants.SERVER_OK if hash1 == hash2 else constants.SERVER_LOGIN_FAILED
 
 
-def extractCoordinates(coordinates, conn):
+def authentication(conn):
+
+    CLIENT_USERNAME = conn.recv(1024).decode()
+
+    # Sending SERVER_KEY_REQUEST
+    conn.send(constants.SERVER_KEY_REQUEST.encode())
+
+    # Getting CLIENT_KEY_ID
+    CLIENT_KEY_ID = conn.recv(1024).decode()
+
+    # calculating hashcode of username
+    expectedHashReturn, usernameHash = clientUserNameHashCode(
+        CLIENT_USERNAME, CLIENT_KEY_ID, conn)
+
+    # sending resultant hashcode to client
+    conn.send(usernameHash.encode())
+    returnHash = conn.recv(1024).decode()
+
+    # Sending Suitable Client Confirmation Message
+    CLIENT_CONFIRMATION_MESSAGE = hashCompare(
+        returnHash, expectedHashReturn)
+
+    # If Log In Fails -> close the server
+    if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
+        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+        conn.close()
+    else:
+        conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+
+
+def pickup_message(conn):
+    conn.send(constants.SERVER_PICK_UP.encode())
+    conn.send(constants.SERVER_LOGOUT.encode())
+    time.sleep(constants.TIMEOUT_PRECISION)
+
+
+def handleMovement(conn):
+    conn.send(constants.SERVER_MOVE.encode())
+    coordinates = conn.recv(1024).decode()
     x = int(coordinates.split()[1])
     y = int(coordinates.split()[2].rstrip('\a\b'))
-    handleMovement(x, y, conn)
-
-
-def handleMovement(x, y, conn):
 
     if (y > 0):
         for _ in itertools.repeat(None, y):
             conn.send(constants.SERVER_MOVE.encode())
+            time.sleep(constants.TIMEOUT_PRECISION)
             y -= 1
 
     if (x > 0):
         conn.send(constants.SERVER_TURN_RIGHT.encode())
         for _ in itertools.repeat(None, x):
-            status = conn.send(constants.SERVER_MOVE.encode())
-            print(status)
+            conn.send(constants.SERVER_MOVE.encode())
+            time.sleep(constants.TIMEOUT_PRECISION)
             x -= 1
 
-    if x == 0 and y == 0:
-        conn.send(constants.SERVER_PICK_UP.encode())
-        conn.send(constants.SERVER_LOGOUT.encode())
-        conn.close()
+    pickup_message(conn)
