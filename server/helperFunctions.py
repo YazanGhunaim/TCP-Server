@@ -5,6 +5,17 @@ import constants
 import socket
 
 
+def extractData(conn):
+    SUFFIX = "\a\b"
+    PACKET = conn.recv(1024).decode()
+
+    while (PACKET.endswith(SUFFIX) != True):
+        TEMP_PACKET = conn.recv(1024).decode()
+        PACKET += TEMP_PACKET
+
+    return PACKET
+
+
 def keyInRange(key_id):
     if key_id < 0 or key_id > 4:
         return False
@@ -52,7 +63,7 @@ def return_hash(conn):
     # closing the connection if client confirmation is not sent within 1 second
     conn.settimeout(constants.TIMEOUT)
     try:
-        return conn.recv(1024).decode()
+        return extractData(conn)
     except socket.timeout:
         conn.close()
 
@@ -77,13 +88,13 @@ def client_confirmation_message(conn, returnHash, expectedHashReturn):
 
 def authentication(conn):
 
-    CLIENT_USERNAME = conn.recv(1024).decode()
+    CLIENT_USERNAME = extractData(conn)
 
     # Sending SERVER_KEY_REQUEST
     conn.send(constants.SERVER_KEY_REQUEST.encode())
 
     # Getting CLIENT_KEY_ID
-    CLIENT_KEY_ID = conn.recv(1024).decode()
+    CLIENT_KEY_ID = extractData(conn)
 
     # calculating hashcode of username
     expectedHashReturn, usernameHash = clientUserNameHashCode(
@@ -106,7 +117,8 @@ def pickup_message(conn):
 
 def handleMovement(conn):
     conn.send(constants.SERVER_MOVE.encode())
-    coordinates = conn.recv(1024).decode()
+    coordinates = extractData(conn)
+
     x = int(coordinates.split()[1])
     y = int(coordinates.split()[2].rstrip('\a\b'))
 
@@ -123,5 +135,6 @@ def handleMovement(conn):
             time.sleep(constants.TIMEOUT_PRECISION)
             x -= 1
 
+    print(x,y)
     if (x == 0 and y == 0):
         pickup_message(conn)

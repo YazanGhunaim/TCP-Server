@@ -1,8 +1,9 @@
 import socket
 import threading
 import helperFunctions
+import time
 
-PORT = 6666
+PORT = 6667
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 
@@ -22,6 +23,7 @@ def handle_client(conn, addr):
         print("Timeout!")
         conn.close()
     finally:
+        time.sleep(1)
         conn.close()
 
 
