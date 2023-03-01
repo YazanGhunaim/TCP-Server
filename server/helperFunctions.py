@@ -9,6 +9,7 @@ def extractData(conn):
     SUFFIX = "\a\b"
     PACKET = conn.recv(1024).decode()
 
+    # combining segmented data packets
     while (PACKET.endswith(SUFFIX) != True):
         TEMP_PACKET = conn.recv(1024).decode()
         PACKET += TEMP_PACKET
@@ -135,6 +136,6 @@ def handleMovement(conn):
             time.sleep(constants.TIMEOUT_PRECISION)
             x -= 1
 
-    print(x,y)
+    print(x, y)
     if (x == 0 and y == 0):
         pickup_message(conn)
