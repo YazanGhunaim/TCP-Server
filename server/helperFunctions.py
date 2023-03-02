@@ -4,17 +4,30 @@ import time
 import constants
 import socket
 
+COUNTER = 0
+LIST_PACKETS = []
+
 
 def extractData(conn):
+    FIRST = 1
     SUFFIX = "\a\b"
+    global LIST_PACKETS
+    global COUNTER
+
     PACKET = conn.recv(1024).decode()
+    LIST_PACKETS = PACKET.split(SUFFIX)
+    LIST_PACKETS.pop()
 
-    # combining segmented data packets
-    while (PACKET.endswith(SUFFIX) != True):
-        TEMP_PACKET = conn.recv(1024).decode()
-        PACKET += TEMP_PACKET
-
-    return PACKET
+    if len(LIST_PACKETS) <= 1:
+        # combining segmented data packets
+        while (PACKET.endswith(SUFFIX) != True):
+            TEMP_PACKET = conn.recv(1024).decode()
+            PACKET += TEMP_PACKET
+        return PACKET
+    else:
+        value = LIST_PACKETS[0]
+        del LIST_PACKETS[0]
+        return value
 
 
 def keyInRange(key_id):
@@ -136,6 +149,5 @@ def handleMovement(conn):
             time.sleep(constants.TIMEOUT_PRECISION)
             x -= 1
 
-    print(x, y)
     if (x == 0 and y == 0):
         pickup_message(conn)
