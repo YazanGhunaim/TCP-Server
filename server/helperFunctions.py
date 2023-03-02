@@ -9,25 +9,29 @@ LIST_PACKETS = []
 
 
 def extractData(conn):
-    FIRST = 1
-    SUFFIX = "\a\b"
+    SUFFIX = '\a\b'
     global LIST_PACKETS
     global COUNTER
 
-    PACKET = conn.recv(1024).decode()
-    LIST_PACKETS = PACKET.split(SUFFIX)
-    LIST_PACKETS.pop()
+    if len(LIST_PACKETS) == 0:
+        PACKET = conn.recv(1024).decode()
+        LIST_PACKETS = PACKET.split(SUFFIX)
+        LIST_PACKETS.pop()
 
-    if len(LIST_PACKETS) <= 1:
+    if len(LIST_PACKETS) == 0:
         # combining segmented data packets
         while (PACKET.endswith(SUFFIX) != True):
             TEMP_PACKET = conn.recv(1024).decode()
             PACKET += TEMP_PACKET
-        return PACKET
+
+        LIST_PACKETS.append(PACKET)
+        value = LIST_PACKETS[0]
+        del LIST_PACKETS[0]
+        return value.rstrip(SUFFIX)
     else:
         value = LIST_PACKETS[0]
         del LIST_PACKETS[0]
-        return value
+        return value.rstrip(SUFFIX)
 
 
 def keyInRange(key_id):
@@ -37,8 +41,7 @@ def keyInRange(key_id):
 
 
 def clientUserNameHashCode(username, key_id, conn):
-    # rstrip method removes any occurences of specified characters then converted to integer
-    key_id = int(key_id.rstrip('\a\b'))
+    key_id = int(key_id)
 
     if keyInRange(key_id) == False:
         conn.send(constants.SERVER_KEY_OUT_OF_RANGE_ERROR.encode())
@@ -46,7 +49,7 @@ def clientUserNameHashCode(username, key_id, conn):
 
     try:
         hashcode = 0
-        for i in range(len(username) - 2):
+        for i in range(len(username)):
             hashcode += ord(username[i])
 
         hashcode *= 1000
@@ -69,7 +72,7 @@ def clientUserNameHashCode(username, key_id, conn):
 
 def hashCompare(hash1, hash2):
     # hash1 is the actual returned hash from the client
-    hash1 = int(hash1.rstrip('\a\b'))
+    hash1 = int(hash1)
     return constants.SERVER_OK if hash1 == hash2 else constants.SERVER_LOGIN_FAILED
 
 
@@ -134,7 +137,7 @@ def handleMovement(conn):
     coordinates = extractData(conn)
 
     x = int(coordinates.split()[1])
-    y = int(coordinates.split()[2].rstrip('\a\b'))
+    y = int(coordinates.split()[2])
 
     if (y > 0):
         for _ in itertools.repeat(None, y):
