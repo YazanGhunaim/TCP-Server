@@ -4,34 +4,59 @@ import time
 import constants
 import socket
 
-COUNTER = 0
 LIST_PACKETS = []
+LIST_MERGED = []
+SUFFIX = '\a\b'
+
+
+def merging(string):
+    global LIST_MERGED
+    global SUFFIX
+    LIST_MERGED = string.split(SUFFIX)
+    LIST_MERGED.pop()
+    print(LIST_MERGED)
+
+    if len(LIST_MERGED) == 1:
+        return 0
+    else:
+        return 1
 
 
 def extractData(conn):
-    SUFFIX = '\a\b'
+    global SUFFIX
     global LIST_PACKETS
-    global COUNTER
+    global LIST_MERGED
 
     if len(LIST_PACKETS) == 0:
         PACKET = conn.recv(1024).decode()
         LIST_PACKETS = PACKET.split(SUFFIX)
         LIST_PACKETS.pop()
 
-    if len(LIST_PACKETS) == 0:
-        # combining segmented data packets
-        while (PACKET.endswith(SUFFIX) != True):
-            TEMP_PACKET = conn.recv(1024).decode()
-            PACKET += TEMP_PACKET
+    if len(LIST_MERGED) == 0:
+        if len(LIST_PACKETS) == 0:
+            # combining segmented data packets
+            while (PACKET.endswith(SUFFIX) != True):
+                TEMP_PACKET = conn.recv(1024).decode()
+                PACKET += TEMP_PACKET
 
-        LIST_PACKETS.append(PACKET)
-        value = LIST_PACKETS[0]
-        del LIST_PACKETS[0]
-        return value.rstrip(SUFFIX)
-    else:
-        value = LIST_PACKETS[0]
-        del LIST_PACKETS[0]
-        return value.rstrip(SUFFIX)
+            LIST_PACKETS.append(PACKET)
+            DATA_MESSAGE = LIST_PACKETS[0]
+            del LIST_PACKETS[0]
+            STATUS = merging(DATA_MESSAGE)
+            if STATUS == 0:
+                del LIST_MERGED[0]
+                print(DATA_MESSAGE)
+                return DATA_MESSAGE.rstrip(SUFFIX)
+        else:
+            DATA_MESSAGE = LIST_PACKETS[0]
+            del LIST_PACKETS[0]
+            print(DATA_MESSAGE)
+            return DATA_MESSAGE.rstrip(SUFFIX)
+
+    DATA_MESSAGE = LIST_MERGED[0]
+    del LIST_MERGED[0]
+    print(DATA_MESSAGE)
+    return DATA_MESSAGE.rstrip(SUFFIX)
 
 
 def keyInRange(key_id):
