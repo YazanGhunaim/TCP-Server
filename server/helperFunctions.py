@@ -45,17 +45,14 @@ def extractData(conn):
             STATUS = merging(DATA_MESSAGE)
             if STATUS == 0:
                 del LIST_MERGED[0]
-                print(DATA_MESSAGE)
                 return DATA_MESSAGE.rstrip(SUFFIX)
         else:
             DATA_MESSAGE = LIST_PACKETS[0]
             del LIST_PACKETS[0]
-            print(DATA_MESSAGE)
             return DATA_MESSAGE.rstrip(SUFFIX)
 
     DATA_MESSAGE = LIST_MERGED[0]
     del LIST_MERGED[0]
-    print(DATA_MESSAGE)
     return DATA_MESSAGE.rstrip(SUFFIX)
 
 
