@@ -79,8 +79,8 @@ def extractData(conn):
             return combining_segmented_packets(conn, PACKET)
         else:
             return return_from_packet_list()
-
-    return return_from_merged_list()
+    else:
+        return return_from_merged_list()
 
 
 def keyInRange(key_id):
