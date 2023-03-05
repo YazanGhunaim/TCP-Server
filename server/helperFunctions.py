@@ -64,6 +64,8 @@ def combining_segmented_packets(conn, PACKET):
     if STATUS == 0:
         del LIST_MERGED[0]
         return DATA_MESSAGE.rstrip(SUFFIX)
+    else:
+        return return_from_merged_list()
 
 
 def extractData(conn):
