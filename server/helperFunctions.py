@@ -6,6 +6,7 @@ import socket
 
 LIST_PACKETS = []
 LIST_MERGED = []
+PACKET_SIZE = 1024
 SUFFIX = '\a\b'
 
 
@@ -14,12 +15,55 @@ def merging(string):
     global SUFFIX
     LIST_MERGED = string.split(SUFFIX)
     LIST_MERGED.pop()
-    print(LIST_MERGED)
 
     if len(LIST_MERGED) == 1:
         return 0
     else:
         return 1
+
+
+def initialize_packetlist(conn):
+    global LIST_PACKETS
+    PACKET = conn.recv(PACKET_SIZE).decode()
+    LIST_PACKETS = PACKET.split(SUFFIX)
+    LIST_PACKETS.pop()
+    return PACKET
+
+
+def return_from_merged_list():
+    global LIST_MERGED
+    global SUFFIX
+    DATA_MESSAGE = LIST_MERGED[0]
+    del LIST_MERGED[0]
+    return DATA_MESSAGE.rstrip(SUFFIX)
+
+
+def return_from_packet_list():
+    global LIST_PACKETS
+    DATA_MESSAGE = LIST_PACKETS[0]
+    del LIST_PACKETS[0]
+    return DATA_MESSAGE.rstrip(SUFFIX)
+
+
+def combining_segmented_packets(conn):
+    global LIST_PACKETS
+    global LIST_MERGED
+    global SUFFIX
+
+    # combining segmented data packets
+    while (PACKET.endswith(SUFFIX) != True):
+        TEMP_PACKET = conn.recv(PACKET_SIZE).decode()
+        PACKET += TEMP_PACKET
+
+    LIST_PACKETS.append(PACKET)
+    DATA_MESSAGE = LIST_PACKETS[0]
+    del LIST_PACKETS[0]
+
+    # merging returns 0 if the data recieved wasnt merged with other packets
+    STATUS = merging(DATA_MESSAGE)
+    if STATUS == 0:
+        del LIST_MERGED[0]
+        return DATA_MESSAGE.rstrip(SUFFIX)
 
 
 def extractData(conn):
@@ -28,35 +72,15 @@ def extractData(conn):
     global LIST_MERGED
 
     if len(LIST_PACKETS) == 0:
-        PACKET = conn.recv(1024).decode()
-        LIST_PACKETS = PACKET.split(SUFFIX)
-        LIST_PACKETS.pop()
+        PACKET = initialize_packetlist(conn)
 
     if len(LIST_MERGED) == 0:
         if len(LIST_PACKETS) == 0:
-            # combining segmented data packets
-            while (PACKET.endswith(SUFFIX) != True):
-                TEMP_PACKET = conn.recv(1024).decode()
-                PACKET += TEMP_PACKET
-
-            LIST_PACKETS.append(PACKET)
-            DATA_MESSAGE = LIST_PACKETS[0]
-            del LIST_PACKETS[0]
-            STATUS = merging(DATA_MESSAGE)
-            if STATUS == 0:
-                del LIST_MERGED[0]
-                print(DATA_MESSAGE)
-                return DATA_MESSAGE.rstrip(SUFFIX)
+            return combining_segmented_packets(conn)
         else:
-            DATA_MESSAGE = LIST_PACKETS[0]
-            del LIST_PACKETS[0]
-            print(DATA_MESSAGE)
-            return DATA_MESSAGE.rstrip(SUFFIX)
+            return return_from_packet_list()
 
-    DATA_MESSAGE = LIST_MERGED[0]
-    del LIST_MERGED[0]
-    print(DATA_MESSAGE)
-    return DATA_MESSAGE.rstrip(SUFFIX)
+    return return_from_merged_list()
 
 
 def keyInRange(key_id):
