@@ -3,7 +3,7 @@ import threading
 import helperFunctions
 import time
 
-PORT = 6666
+PORT = 5050
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 
