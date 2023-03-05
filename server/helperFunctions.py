@@ -45,7 +45,7 @@ def return_from_packet_list():
     return DATA_MESSAGE.rstrip(SUFFIX)
 
 
-def combining_segmented_packets(conn):
+def combining_segmented_packets(conn, PACKET):
     global LIST_PACKETS
     global LIST_MERGED
     global SUFFIX
@@ -76,7 +76,7 @@ def extractData(conn):
 
     if len(LIST_MERGED) == 0:
         if len(LIST_PACKETS) == 0:
-            return combining_segmented_packets(conn)
+            return combining_segmented_packets(conn, PACKET)
         else:
             return return_from_packet_list()
 
