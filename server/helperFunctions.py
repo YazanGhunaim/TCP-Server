@@ -24,6 +24,7 @@ def merging(string):
 
 def initialize_packetlist(conn):
     global LIST_PACKETS
+    time.sleep(constants.TIMEOUT_PRECISION)
     PACKET = conn.recv(PACKET_SIZE).decode()
     LIST_PACKETS = PACKET.split(SUFFIX)
     LIST_PACKETS.pop()
@@ -40,6 +41,7 @@ def return_from_merged_list():
 
 def return_from_packet_list():
     global LIST_PACKETS
+    global SUFFIX
     DATA_MESSAGE = LIST_PACKETS[0]
     del LIST_PACKETS[0]
     return DATA_MESSAGE.rstrip(SUFFIX)
@@ -52,6 +54,7 @@ def combining_segmented_packets(conn, PACKET):
 
     # combining segmented data packets
     while (PACKET.endswith(SUFFIX) != True):
+        time.sleep(constants.TIMEOUT_PRECISION)
         TEMP_PACKET = conn.recv(PACKET_SIZE).decode()
         PACKET += TEMP_PACKET
 
