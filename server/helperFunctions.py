@@ -190,6 +190,10 @@ def handleMovement(conn):
     x = int(coordinates.split()[1])
     y = int(coordinates.split()[2])
 
+    # fix y orientation
+    # move y till 0
+    # fix x orientation
+    # move x to 0
     if (y > 0):
         for _ in itertools.repeat(None, y):
             conn.send(constants.SERVER_MOVE.encode())
