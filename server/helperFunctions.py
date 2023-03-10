@@ -197,6 +197,8 @@ def handleMovement(conn):
     # move y till 0
     # fix x orientation
     # move x to 0
+    # sendall
+    # send recv funcs
     if (y > 0):
         for _ in itertools.repeat(None, y):
             conn.send(constants.SERVER_MOVE.encode())
