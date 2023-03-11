@@ -194,26 +194,6 @@ def pickup_message(conn):
     send_message(conn, constants.SERVER_LOGOUT)
 
 
-def evade_obstacle(conn, px, py, nx, ny):
-    if px == nx and py == ny:
-        send_message(conn, constants.SERVER_TURN_LEFT)
-        send_message(conn, constants.SERVER_MOVE)
-        coordinates = extractData(conn)
-        send_message(conn, constants.SERVER_TURN_RIGHT)
-        send_message(conn, constants.SERVER_MOVE)
-        coordinates = extractData(conn)
-        send_message(conn, constants.SERVER_MOVE)
-        coordinates = extractData(conn)
-        send_message(conn, constants.SERVER_TURN_RIGHT)
-        send_message(conn, constants.SERVER_MOVE)
-        coordinates = extractData(conn)
-        send_message(conn, constants.SERVER_TURN_LEFT)
-        x = int(coordinates.split()[1])
-        y = int(coordinates.split()[2])
-
-        return x, y
-
-
 def fix_orientation(conn, x, y):
     send_message(conn, constants.SERVER_MOVE)
     coordinates = extractData(conn)
