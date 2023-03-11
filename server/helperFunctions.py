@@ -188,11 +188,6 @@ def authentication(conn):
     client_confirmation_message(conn, returnHash, expectedHashReturn)
 
 
-def pickup_message(conn):
-    send_message(conn, constants.SERVER_PICK_UP)
-    send_message(conn, constants.SERVER_LOGOUT)
-
-
 def fix_orientation(conn, x, y):
     send_message(conn, constants.SERVER_MOVE)
     coordinates = extractData(conn)
@@ -250,6 +245,11 @@ def get_x_to_zero(conn, x, y):
 def get_y_to_zero(conn, x, y):
     for _ in itertools.repeat(None, y):
         send_message(conn, constants.SERVER_MOVE)
+
+
+def pickup_message(conn):
+    send_message(conn, constants.SERVER_PICK_UP)
+    send_message(conn, constants.SERVER_LOGOUT)
 
 
 def at_origin(conn, x, y):
