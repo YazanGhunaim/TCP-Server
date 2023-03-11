@@ -1,6 +1,6 @@
+from helperFunctions import authentication, handleMovement
 import socket
 import threading
-import helperFunctions
 import time
 
 PORT = 6667
@@ -16,8 +16,8 @@ def handle_client(conn, addr):
     try:
 
         # commands and packets regarding the robot authentication procedure
-        helperFunctions.authentication(conn)
-        helperFunctions.handleMovement(conn)
+        authentication(conn)
+        handleMovement(conn)
 
     except socket.timeout as e:
         print("Timeout!")
