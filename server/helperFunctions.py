@@ -12,7 +12,10 @@ SUFFIX = '\a\b'
 
 def recieve_message(conn):
     conn.settimeout(constants.TIMEOUT)
-    return conn.recv(PACKET_SIZE).decode()
+    try:
+        return conn.recv(PACKET_SIZE).decode()
+    except socket.timeout:
+        conn.close()
 
 
 def send_message(conn, command):
