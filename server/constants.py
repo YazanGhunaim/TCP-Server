@@ -21,4 +21,4 @@ SERVER_TURN_RIGHT = "104 TURN RIGHT\a\b"
 # Time constants
 TIMEOUT = 1
 # seperate each packet sent to client when robot is moving by 0.1 seconds to avoid overlap
-TIMEOUT_PRECISION = 0.2
+TIMEOUT_PRECISION = 0.3
