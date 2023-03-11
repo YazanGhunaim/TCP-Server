@@ -10,6 +10,16 @@ PACKET_SIZE = 1024
 SUFFIX = '\a\b'
 
 
+def recieve_message(conn):
+    conn.settimeout(constants.TIMEOUT)
+    return conn.recv(PACKET_SIZE).decode()
+
+
+def send_message(conn, command):
+    time.sleep(constants.TIMEOUT_PRECISION)
+    conn.sendall(command.encode())
+
+
 def merging(string):
     global LIST_MERGED
     global SUFFIX
@@ -24,8 +34,7 @@ def merging(string):
 
 def initialize_packetlist(conn):
     global LIST_PACKETS
-    time.sleep(constants.TIMEOUT_PRECISION)
-    PACKET = conn.recv(PACKET_SIZE).decode()
+    PACKET = recieve_message(conn)
     LIST_PACKETS = PACKET.split(SUFFIX)
     LIST_PACKETS.pop()
     return PACKET
@@ -54,8 +63,7 @@ def combining_segmented_packets(conn, PACKET):
 
     # combining segmented data packets
     while (PACKET.endswith(SUFFIX) != True):
-        time.sleep(constants.TIMEOUT_PRECISION)
-        TEMP_PACKET = conn.recv(PACKET_SIZE).decode()
+        TEMP_PACKET = recieve_message(conn)
         PACKET += TEMP_PACKET
 
     LIST_PACKETS.append(PACKET)
@@ -76,7 +84,7 @@ def extractData(conn):
     global LIST_PACKETS
     global LIST_MERGED
 
-    if len(LIST_PACKETS) == 0:
+    if len(LIST_PACKETS) == 0 and len(LIST_MERGED) == 0:
         PACKET = initialize_packetlist(conn)
 
     if len(LIST_MERGED) == 0:
@@ -98,7 +106,7 @@ def clientUserNameHashCode(username, key_id, conn):
     key_id = int(key_id)
 
     if keyInRange(key_id) == False:
-        conn.send(constants.SERVER_KEY_OUT_OF_RANGE_ERROR.encode())
+        send_message(conn, constants.SERVER_KEY_OUT_OF_RANGE_ERROR)
         conn.close()
 
     try:
@@ -146,11 +154,11 @@ def client_confirmation_message(conn, returnHash, expectedHashReturn):
             returnHash, expectedHashReturn)
 
         if CLIENT_CONFIRMATION_MESSAGE == constants.SERVER_LOGIN_FAILED:
-            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+            send_message(conn, CLIENT_CONFIRMATION_MESSAGE)
             conn.close()
             return False
         else:
-            conn.send(CLIENT_CONFIRMATION_MESSAGE.encode())
+            send_message(conn, CLIENT_CONFIRMATION_MESSAGE)
             return True
     except Exception as e:
         conn.close()
@@ -162,7 +170,7 @@ def authentication(conn):
     CLIENT_USERNAME = extractData(conn)
 
     # Sending SERVER_KEY_REQUEST
-    conn.send(constants.SERVER_KEY_REQUEST.encode())
+    send_message(conn, constants.SERVER_KEY_REQUEST)
 
     # Getting CLIENT_KEY_ID
     CLIENT_KEY_ID = extractData(conn)
@@ -172,7 +180,7 @@ def authentication(conn):
         CLIENT_USERNAME, CLIENT_KEY_ID, conn)
 
     # sending resultant hashcode to client
-    conn.send(usernameHash.encode())
+    send_message(conn, usernameHash)
 
     returnHash = return_hash(conn)
 
@@ -181,13 +189,12 @@ def authentication(conn):
 
 
 def pickup_message(conn):
-    conn.send(constants.SERVER_PICK_UP.encode())
-    conn.send(constants.SERVER_LOGOUT.encode())
-    time.sleep(constants.TIMEOUT_PRECISION)
+    send_message(conn, constants.SERVER_PICK_UP)
+    send_message(conn, constants.SERVER_LOGOUT)
 
 
 def handleMovement(conn):
-    conn.send(constants.SERVER_MOVE.encode())
+    send_message(conn, constants.SERVER_MOVE)
     coordinates = extractData(conn)
 
     x = int(coordinates.split()[1])
@@ -201,15 +208,13 @@ def handleMovement(conn):
     # send recv funcs
     if (y > 0):
         for _ in itertools.repeat(None, y):
-            conn.send(constants.SERVER_MOVE.encode())
-            time.sleep(constants.TIMEOUT_PRECISION)
+            send_message(conn, constants.SERVER_MOVE)
             y -= 1
 
     if (x > 0):
-        conn.send(constants.SERVER_TURN_RIGHT.encode())
+        send_message(conn, constants.SERVER_TURN_RIGHT)
         for _ in itertools.repeat(None, x):
-            conn.send(constants.SERVER_MOVE.encode())
-            time.sleep(constants.TIMEOUT_PRECISION)
+            send_message(conn, constants.SERVER_MOVE)
             x -= 1
 
     if (x == 0 and y == 0):
