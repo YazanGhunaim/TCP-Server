@@ -1,7 +1,6 @@
 import constants
 import itertools
 import time
-import constants
 import socket
 import sys
 
