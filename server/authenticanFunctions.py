@@ -1,32 +1,27 @@
+from time import sleep
 import constants
-import itertools
-import time
 import socket
-import sys
 
 LIST_PACKETS = []
 LIST_MERGED = []
-PACKET_SIZE = 1024
-SUFFIX = '\a\b'
 
 
 def recieve_message(conn):
     conn.settimeout(constants.TIMEOUT)
     try:
-        return conn.recv(PACKET_SIZE).decode()
+        return conn.recv(constants.PACKET_SIZE).decode()
     except socket.timeout:
         conn.close()
 
 
 def send_message(conn, command):
-    time.sleep(constants.TIMEOUT_PRECISION)
+    sleep(constants.TIMEOUT_PRECISION)
     conn.sendall(command.encode())
 
 
 def merging(string):
     global LIST_MERGED
-    global SUFFIX
-    LIST_MERGED = string.split(SUFFIX)
+    LIST_MERGED = string.split(constants.SUFFIX)
     LIST_MERGED.pop()
 
     if len(LIST_MERGED) == 1:
@@ -38,34 +33,31 @@ def merging(string):
 def initialize_packetlist(conn):
     global LIST_PACKETS
     PACKET = recieve_message(conn)
-    LIST_PACKETS = PACKET.split(SUFFIX)
+    LIST_PACKETS = PACKET.split(constants.SUFFIX)
     LIST_PACKETS.pop()
     return PACKET
 
 
 def return_from_merged_list():
     global LIST_MERGED
-    global SUFFIX
     DATA_MESSAGE = LIST_MERGED[0]
     del LIST_MERGED[0]
-    return DATA_MESSAGE.rstrip(SUFFIX)
+    return DATA_MESSAGE.rstrip(constants.SUFFIX)
 
 
 def return_from_packet_list():
     global LIST_PACKETS
-    global SUFFIX
     DATA_MESSAGE = LIST_PACKETS[0]
     del LIST_PACKETS[0]
-    return DATA_MESSAGE.rstrip(SUFFIX)
+    return DATA_MESSAGE.rstrip(constants.SUFFIX)
 
 
 def combining_segmented_packets(conn, PACKET):
     global LIST_PACKETS
     global LIST_MERGED
-    global SUFFIX
 
     # combining segmented data packets
-    while (PACKET.endswith(SUFFIX) != True):
+    while (PACKET.endswith(constants.SUFFIX) != True):
         TEMP_PACKET = recieve_message(conn)
         PACKET += TEMP_PACKET
 
@@ -77,13 +69,12 @@ def combining_segmented_packets(conn, PACKET):
     STATUS = merging(DATA_MESSAGE)
     if STATUS == 0:
         del LIST_MERGED[0]
-        return DATA_MESSAGE.rstrip(SUFFIX)
+        return DATA_MESSAGE.rstrip(constants.SUFFIX)
     else:
         return return_from_merged_list()
 
 
 def extractData(conn):
-    global SUFFIX
     global LIST_PACKETS
     global LIST_MERGED
 
@@ -189,105 +180,3 @@ def authentication(conn):
 
     # If Log In Fails -> close the server
     client_confirmation_message(conn, returnHash, expectedHashReturn)
-
-
-def fix_orientation(conn, x, y):
-    send_message(conn, constants.SERVER_MOVE)
-    coordinates = extractData(conn)
-
-    new_x = int(coordinates.split()[1])
-    new_y = int(coordinates.split()[2])
-
-    if new_x > x:
-        # facing east
-        if new_x > 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-            send_message(conn, constants.SERVER_TURN_LEFT)
-            STATUS = 'x'
-            return new_x, new_y, STATUS
-        else:
-            STATUS = 'x'
-            return new_x, new_y, STATUS
-    elif new_x < x:
-        # facing west
-        if new_x < 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-            STATUS = 'x'
-            return new_x, new_y, STATUS
-        else:
-            STATUS = 'x'
-            return new_x, new_y, STATUS
-    elif new_y > y:
-        # facing north
-        if new_y > 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-            STATUS = 'y'
-            return new_x, new_y, STATUS
-        else:
-            STATUS = 'y'
-            return new_x, new_y, STATUS
-    elif new_y < y:
-        # facing south
-        if new_y < 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-            send_message(conn, constants.SERVER_TURN_LEFT)
-            STATUS = 'y'
-            return new_x, new_y, STATUS
-        else:
-            STATUS = 'y'
-            return new_x, new_y, STATUS
-
-
-def get_x_to_zero(conn, x, y):
-    for _ in itertools.repeat(None, x):
-        send_message(conn, constants.SERVER_MOVE)
-
-
-def get_y_to_zero(conn, x, y):
-    for _ in itertools.repeat(None, y):
-        send_message(conn, constants.SERVER_MOVE)
-
-
-def pickup_message(conn):
-    send_message(conn, constants.SERVER_PICK_UP)
-    send_message(conn, constants.SERVER_LOGOUT)
-
-
-def at_origin(conn, x, y):
-    if x == 0 and y == 0:
-        pickup_message(conn)
-        sys.exit()
-
-
-def handleMovement(conn):
-    send_message(conn, constants.SERVER_MOVE)
-    coordinates = extractData(conn)
-
-    x = int(coordinates.split()[1])
-    y = int(coordinates.split()[2])
-
-    # if already at origin
-    at_origin(conn, x, y)
-
-    new_x, new_y, STATUS = fix_orientation(conn, x, y)
-    at_origin(conn, x, y)
-
-    if STATUS == 'x':
-        get_x_to_zero(conn, new_x, new_y)
-        if x < 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-        if x > 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-        get_y_to_zero(conn, new_x, new_y)
-    else:
-        get_y_to_zero(conn, new_x, new_y)
-
-        if y < 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-        elif y > 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-
-        get_x_to_zero(conn, new_x, new_y)
-        pickup_message(conn)

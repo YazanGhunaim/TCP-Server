@@ -1,7 +1,8 @@
-from helperFunctions import authentication, handleMovement
+from authenticanFunctions import authentication
+from movementFunctions import handleMovement
+from time import sleep
 import socket
 import threading
-import time
 
 PORT = 6667
 ADDR = ('localhost', PORT)
@@ -23,7 +24,7 @@ def handle_client(conn, addr):
         print("Timeout!")
         conn.close()
     finally:
-        time.sleep(1)
+        sleep(1)
         conn.close()
 
 

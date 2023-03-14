@@ -1,6 +1,6 @@
+from time import sleep
 import socket
 import sys
-from time import sleep
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
