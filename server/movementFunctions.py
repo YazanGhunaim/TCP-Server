@@ -1,66 +1,198 @@
 from authenticanFunctions import *
 from sys import exit
-import itertools
 import constants
 
 
-def fix_orientation(conn, x, y):
-    send_message(conn, constants.SERVER_MOVE)
-    coordinates = extractData(conn)
+def zero_check(x, y):
+    if x == 0 or y == 0:
+        return True
+    return False
 
-    new_x = int(coordinates.split()[1])
-    new_y = int(coordinates.split()[2])
+
+def extract_coordinates(conn):
+    coordinates = extractData(conn)
+    x = int(coordinates.split()[1])
+    y = int(coordinates.split()[2])
+    return x, y
+
+
+def instant_obstacle(conn):
+    send_message(conn, constants.SERVER_TURN_RIGHT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_TURN_LEFT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_TURN_LEFT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+    return x, y
+
+
+def evade_obstacle(conn):
+    send_message(conn, constants.SERVER_TURN_LEFT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_TURN_RIGHT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_TURN_RIGHT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_MOVE)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+
+    send_message(conn, constants.SERVER_TURN_LEFT)
+    x, y = extract_coordinates(conn)
+    if zero_check(x, y) == True:
+        return x, y
+    return x, y
+
+
+def fix_orientation_to_y(conn, x, y):
+    send_message(conn, constants.SERVER_MOVE)
+    new_x, new_y = extract_coordinates(conn)
+
+    # if we encounter an obstacle at this stage
+    if x == new_x and y == new_y:
+        new_x, new_y = instant_obstacle(conn)
 
     if new_x > x:
         # facing east
         if new_x > 0:
             send_message(conn, constants.SERVER_TURN_LEFT)
             send_message(conn, constants.SERVER_TURN_LEFT)
-            STATUS = 'x'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
         else:
-            STATUS = 'x'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
     elif new_x < x:
         # facing west
         if new_x < 0:
             send_message(conn, constants.SERVER_TURN_RIGHT)
             send_message(conn, constants.SERVER_TURN_RIGHT)
-            STATUS = 'x'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
         else:
-            STATUS = 'x'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
+
+    return new_x, new_y, "UNCHANGED"
+
+
+def fix_orientation_to_x(conn, x, y):
+    send_message(conn, constants.SERVER_MOVE)
+    new_x, new_y = extract_coordinates(conn)
+
+    # if we encounter an obstacle at this stage
+    if x == new_x and y == new_y:
+        new_x, new_y = instant_obstacle(conn)
+
     elif new_y > y:
         # facing north
         if new_y > 0:
             send_message(conn, constants.SERVER_TURN_RIGHT)
             send_message(conn, constants.SERVER_TURN_RIGHT)
-            STATUS = 'y'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
         else:
-            STATUS = 'y'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
     elif new_y < y:
         # facing south
         if new_y < 0:
             send_message(conn, constants.SERVER_TURN_LEFT)
             send_message(conn, constants.SERVER_TURN_LEFT)
-            STATUS = 'y'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
         else:
-            STATUS = 'y'
-            return new_x, new_y, STATUS
+            return new_x, new_y, "CHANGED"
+
+    return new_x, new_y, "UNCHANGED"
 
 
 def get_x_to_zero(conn, x, y):
-    for _ in itertools.repeat(None, x):
+    x = abs(x)
+    y = abs(y)
+    new_y = abs(y)
+    new_x = abs(x)
+
+    while new_x != 0:
+        prev_x = abs(new_x)
+        prev_y = abs(new_y)
+
         send_message(conn, constants.SERVER_MOVE)
+        new_x, new_y = extract_coordinates(conn)
+        new_x = abs(new_x)
+        new_y = abs(new_y)
+
+        if prev_x == new_x and prev_y == new_y:
+            new_x, new_y = evade_obstacle(conn)
+            new_x = abs(new_x)
+            new_y = abs(new_y)
 
 
 def get_y_to_zero(conn, x, y):
-    for _ in itertools.repeat(None, y):
+    y = abs(y)
+    x = abs(x)
+    new_x = x
+    new_y = y
+
+    while new_y != 0:
+        prev_x = abs(new_x)
+        prev_y = abs(new_y)
+
         send_message(conn, constants.SERVER_MOVE)
+        new_x, new_y = extract_coordinates(conn)
+        new_x = abs(new_x)
+        new_y = abs(new_y)
+
+        if prev_x == new_x and prev_y == new_y:
+            new_x, new_y = evade_obstacle(conn)
+            new_x = abs(new_x)
+            new_y = abs(new_y)
 
 
 def pickup_message(conn):
@@ -76,31 +208,28 @@ def at_origin(conn, x, y):
 
 def handleMovement(conn):
     send_message(conn, constants.SERVER_MOVE)
-    coordinates = extractData(conn)
-
-    x = int(coordinates.split()[1])
-    y = int(coordinates.split()[2])
+    x, y = extract_coordinates(conn)
 
     # if already at origin
     at_origin(conn, x, y)
 
-    new_x, new_y, STATUS = fix_orientation(conn, x, y)
+    new_x, new_y, status = fix_orientation_to_y(conn, x, y)
     at_origin(conn, x, y)
 
-    if STATUS == 'x':
-        get_x_to_zero(conn, new_x, new_y)
-        if x < 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-        if x > 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
+    if status == "UNCHANGED":
+        new_x, new_y, status = fix_orientation_to_x(conn, new_x, new_y)
         get_y_to_zero(conn, new_x, new_y)
+        if new_x > 0 and new_y > 0 or new_y < 0 and new_x < 0:
+            send_message(conn, constants.SERVER_TURN_RIGHT)
+        else:
+            send_message(conn, constants.SERVER_TURN_LEFT)
+        get_x_to_zero(conn, new_x, new_y)
+        pickup_message(conn)
     else:
-        get_y_to_zero(conn, new_x, new_y)
-
-        if y < 0:
-            send_message(conn, constants.SERVER_TURN_LEFT)
-        elif y > 0:
-            send_message(conn, constants.SERVER_TURN_RIGHT)
-
         get_x_to_zero(conn, new_x, new_y)
+        if new_x > 0 and new_y > 0 or new_y < 0 and new_x < 0:
+            send_message(conn, constants.SERVER_TURN_LEFT)
+        else:
+            send_message(conn, constants.SERVER_TURN_RIGHT)
+        get_y_to_zero(conn, new_x, new_y)
         pickup_message(conn)
