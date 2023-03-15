@@ -153,47 +153,47 @@ def fix_orientation_to_x(conn, x, y):
 
 
 def get_x_to_zero(conn, x, y):
-    x = abs(x)
-    y = abs(y)
-    new_y = abs(y)
-    new_x = abs(x)
+    x = x
+    y = y
+    new_y = y
+    new_x = x
 
     while new_x != 0:
-        prev_x = abs(new_x)
-        prev_y = abs(new_y)
+        prev_x = new_x
+        prev_y = new_y
 
         send_message(conn, constants.SERVER_MOVE)
         new_x, new_y = extract_coordinates(conn)
-        new_x = abs(new_x)
-        new_y = abs(new_y)
+        new_x = new_x
+        new_y = new_y
 
         if prev_x == new_x and prev_y == new_y:
             new_x, new_y = evade_obstacle(conn)
-            new_x = abs(new_x)
-            new_y = abs(new_y)
+            new_x = new_x
+            new_y = new_y
 
         at_origin(conn, new_x, new_y)
 
 
 def get_y_to_zero(conn, x, y):
-    y = abs(y)
-    x = abs(x)
+    y = y
+    x = x
     new_x = x
     new_y = y
 
     while new_y != 0:
-        prev_x = abs(new_x)
-        prev_y = abs(new_y)
+        prev_x = new_x
+        prev_y = new_y
 
         send_message(conn, constants.SERVER_MOVE)
         new_x, new_y = extract_coordinates(conn)
-        new_x = abs(new_x)
-        new_y = abs(new_y)
+        new_x = new_x
+        new_y = new_y
 
         if prev_x == new_x and prev_y == new_y:
             new_x, new_y = evade_obstacle(conn)
-            new_x = abs(new_x)
-            new_y = abs(new_y)
+            new_x = new_x
+            new_y = new_y
 
         at_origin(conn, new_x, new_y)
 
