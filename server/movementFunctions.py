@@ -1,11 +1,6 @@
 from authenticanFunctions import *
 from sys import exit
 import constants
-import math
-
-
-def distance_between_points(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 
 def at_origin(conn, x, y):
@@ -184,7 +179,7 @@ def get_x_to_zero(conn, x, y):
         new_x, new_y = extract_coordinates(conn)
 
         if prev_x == new_x and prev_y == new_y:
-            if distance_between_points(new_x, new_y, 0, new_y) == 1 and new_x != 0:
+            if new_x + 1 == 0 or new_x - 1 == 0:
                 if new_x > 0 and new_y > 0 or new_x < 0 and new_y < 0:
                     new_x, new_y = axis_obstacle(conn, 2)
                 else:
@@ -205,10 +200,9 @@ def get_y_to_zero(conn, x, y):
 
         send_message(conn, constants.SERVER_MOVE)
         new_x, new_y = extract_coordinates(conn)
-        at_origin(conn, new_x, new_y)
 
         if prev_x == new_x and prev_y == new_y:
-            if distance_between_points(new_x, new_y, new_x, 0) == 1 and new_y != 0:
+            if new_y + 1 == 0 or new_y - 1 == 0:
                 if new_x > 0 and new_y > 0 or new_x < 0 and new_y < 0:
                     new_x, new_y = axis_obstacle(conn, 1)
                 else:
