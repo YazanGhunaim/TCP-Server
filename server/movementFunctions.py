@@ -220,6 +220,7 @@ def handleMovement(conn):
             send_message(conn, constants.SERVER_TURN_RIGHT)
         else:
             send_message(conn, constants.SERVER_TURN_LEFT)
+        new_x, new_y = extract_coordinates(conn)
         get_x_to_zero(conn, new_x, new_y)
     else:
         get_x_to_zero(conn, new_x, new_y)
@@ -227,4 +228,5 @@ def handleMovement(conn):
             send_message(conn, constants.SERVER_TURN_LEFT)
         else:
             send_message(conn, constants.SERVER_TURN_RIGHT)
+        new_x, new_y = extract_coordinates(conn)
         get_y_to_zero(conn, new_x, new_y)
