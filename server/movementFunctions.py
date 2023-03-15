@@ -3,6 +3,12 @@ from sys import exit
 import constants
 
 
+def at_origin(conn, x, y):
+    if x == 0 and y == 0:
+        pickup_message(conn)
+        exit()
+
+
 def zero_check(x, y):
     if x == 0 or y == 0:
         return True
@@ -197,12 +203,6 @@ def pickup_message(conn):
     send_message(conn, constants.SERVER_LOGOUT)
 
 
-def at_origin(conn, x, y):
-    if x == 0 and y == 0:
-        pickup_message(conn)
-        exit()
-
-
 def handleMovement(conn):
     send_message(conn, constants.SERVER_MOVE)
     x, y = extract_coordinates(conn)
@@ -221,7 +221,6 @@ def handleMovement(conn):
         else:
             send_message(conn, constants.SERVER_TURN_LEFT)
         get_x_to_zero(conn, new_x, new_y)
-        pickup_message(conn)
     else:
         get_x_to_zero(conn, new_x, new_y)
         if new_x > 0 and new_y > 0 or new_y < 0 and new_x < 0:
@@ -229,4 +228,3 @@ def handleMovement(conn):
         else:
             send_message(conn, constants.SERVER_TURN_RIGHT)
         get_y_to_zero(conn, new_x, new_y)
-        pickup_message(conn)
