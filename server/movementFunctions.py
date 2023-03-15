@@ -88,42 +88,6 @@ def evade_obstacle(conn):
     return x, y
 
 
-def obstacle_at_axis(conn):
-    send_message(conn, constants.SERVER_TURN_LEFT)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_MOVE)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_TURN_RIGHT)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_MOVE)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_MOVE)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_TURN_RIGHT)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_MOVE)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    send_message(conn, constants.SERVER_TURN_LEFT)
-    x, y = extract_coordinates(conn)
-    at_origin(conn, x, y)
-
-    return x, y
-
-
 def fix_orientation_to_y(conn, x, y):
     send_message(conn, constants.SERVER_MOVE)
     new_x, new_y = extract_coordinates(conn)
@@ -198,12 +162,9 @@ def get_x_to_zero(conn, x, y):
         new_y = abs(new_y)
 
         if prev_x == new_x and prev_y == new_y:
-            if new_x == 0 or new_y == 0:
-                new_x, new_y = obstacle_at_axis(conn)
-            else:
-                new_x, new_y = evade_obstacle(conn)
-                new_x = abs(new_x)
-                new_y = abs(new_y)
+            new_x, new_y = evade_obstacle(conn)
+            new_x = abs(new_x)
+            new_y = abs(new_y)
 
         at_origin(conn, new_x, new_y)
 
@@ -224,12 +185,9 @@ def get_y_to_zero(conn, x, y):
         new_y = abs(new_y)
 
         if prev_x == new_x and prev_y == new_y:
-            if new_x == 0 or new_y == 0:
-                new_x, new_y = obstacle_at_axis(conn)
-            else:
-                new_x, new_y = evade_obstacle(conn)
-                new_x = abs(new_x)
-                new_y = abs(new_y)
+            new_x, new_y = evade_obstacle(conn)
+            new_x = abs(new_x)
+            new_y = abs(new_y)
 
         at_origin(conn, new_x, new_y)
 
