@@ -1,4 +1,5 @@
 from time import sleep
+import validationTests
 import constants
 import socket
 
@@ -162,12 +163,14 @@ def client_confirmation_message(conn, returnHash, expectedHashReturn):
 def authentication(conn):
 
     CLIENT_USERNAME = extractData(conn)
+    validationTests.usernameTest(conn, CLIENT_USERNAME)
 
     # Sending SERVER_KEY_REQUEST
     send_message(conn, constants.SERVER_KEY_REQUEST)
 
     # Getting CLIENT_KEY_ID
     CLIENT_KEY_ID = extractData(conn)
+    validationTests.key_not_number(conn, CLIENT_KEY_ID)
 
     # calculating hashcode of username
     expectedHashReturn, usernameHash = clientUserNameHashCode(
@@ -177,6 +180,8 @@ def authentication(conn):
     send_message(conn, usernameHash)
 
     returnHash = return_hash(conn)
+    validationTests.space_confirmation(conn, returnHash)
+    validationTests.six_digit_confirmation(conn, returnHash)
 
     # If Log In Fails -> close the server
     client_confirmation_message(conn, returnHash, expectedHashReturn)

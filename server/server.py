@@ -39,5 +39,6 @@ def start():
         except socket.error as e:
             print(f"Error accepting connection: {e}")
 
+
 if __name__ == "__main__":
     start()
