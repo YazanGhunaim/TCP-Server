@@ -1,4 +1,5 @@
 from authenticanFunctions import *
+from validationTests import space_confirmation,float_test
 from sys import exit
 import constants
 
@@ -17,10 +18,12 @@ def zero_check(x, y):
 
 def extract_coordinates(conn):
     coordinates = extractData(conn)
-    x = int(coordinates.split()[1])
-    y = int(coordinates.split()[2])
-    at_origin(conn, x, y)
-    return x, y
+    space_confirmation(conn, coordinates)
+    x = coordinates.split()[1]
+    y = coordinates.split()[2]
+    float_test(conn, x, y)
+    at_origin(conn, int(x), int(y))
+    return int(x), int(y)
 
 
 def move(conn):

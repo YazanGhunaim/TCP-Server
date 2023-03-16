@@ -28,3 +28,9 @@ def six_digit_confirmation(conn, key):
     if len(key) > 5:
         authenticanFunctions.send_message(conn, constants.SERVER_SYNTAX_ERROR)
         close_connection(conn)
+
+
+def float_test(conn, x, y):
+    if x.find('.') != -1 or y.find('.') != -1:
+        authenticanFunctions.send_message(conn, constants.SERVER_SYNTAX_ERROR)
+        close_connection(conn)
