@@ -19,10 +19,11 @@ SERVER_TURN_RIGHT = "104 TURN RIGHT\a\b"
 SERVER_SYNTAX_ERROR = "301 SYNTAX ERROR\a\b"
 
 
+CLIENT_RECHARGING = "RECHARGING\a\b"
+CLIENT_FULL_POWER = "FULL POWER\a\b"
 # Time constants
 TIMEOUT = 1
-# seperate each packet sent to client when robot is moving by 0.1 seconds to avoid overlap
-TIMEOUT_PRECISION = 0
+TIMEOUT_RECHARGING = 5
 
 
 # number of bytes of recieved message

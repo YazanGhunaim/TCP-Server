@@ -16,7 +16,6 @@ def recieve_message(conn):
 
 
 def send_message(conn, command):
-    sleep(constants.TIMEOUT_PRECISION)
     conn.sendall(command.encode())
 
 
@@ -34,6 +33,7 @@ def merging(string):
 def initialize_packetlist(conn):
     global LIST_PACKETS
     PACKET = recieve_message(conn)
+    validationTests.suffix_test(conn, PACKET)
     LIST_PACKETS = PACKET.split(constants.SUFFIX)
     LIST_PACKETS.pop()
     return PACKET

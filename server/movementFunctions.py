@@ -1,5 +1,5 @@
 from authenticanFunctions import *
-from validationTests import space_confirmation,float_test
+from validationTests import space_confirmation, float_test
 from sys import exit
 import constants
 

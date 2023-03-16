@@ -4,7 +4,7 @@ from time import sleep
 import socket
 import threading
 
-PORT = 6667
+PORT = 6666
 ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 
