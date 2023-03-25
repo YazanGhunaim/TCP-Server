@@ -179,6 +179,8 @@ def get_y_to_zero(conn, x, y):
 
 def pickup_message(conn):
     send_message(conn, constants.SERVER_PICK_UP)
+    secret = recieve_message(conn)
+    validationTests.secret_length(conn, secret)
     send_message(conn, constants.SERVER_LOGOUT)
 
 

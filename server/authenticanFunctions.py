@@ -10,7 +10,25 @@ LIST_MERGED = []
 def recieve_message(conn):
     conn.settimeout(constants.TIMEOUT)
     try:
-        return conn.recv(constants.PACKET_SIZE).decode()
+        DATA = conn.recv(constants.PACKET_SIZE).decode()
+        if DATA == constants.CLIENT_FULL_POWER:
+            send_message(conn, constants.SERVER_LOGIC_ERROR)
+            conn.close()
+        elif DATA == constants.CLIENT_RECHARGING:
+            recharging(conn)
+            DATA = conn.recv(constants.PACKET_SIZE).decode()
+        return DATA
+    except socket.timeout:
+        conn.close()
+
+
+def recharging(conn):
+    conn.settimeout(constants.TIMEOUT_RECHARGING)
+    try:
+        DATA = conn.recv(constants.PACKET_SIZE).decode()
+        if DATA != constants.CLIENT_FULL_POWER:
+            send_message(conn, constants.SERVER_LOGIC_ERROR)
+            conn.close()
     except socket.timeout:
         conn.close()
 

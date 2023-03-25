@@ -40,3 +40,9 @@ def suffix_test(conn, packet):
     if packet.split(constants.SUFFIX)[0].endswith("\a"):
         authenticanFunctions.send_message(conn, constants.SERVER_SYNTAX_ERROR)
         close_connection(conn)
+
+
+def secret_length(conn, secret):
+    if len(secret) >= 100:
+        authenticanFunctions.send_message(conn, constants.SERVER_SYNTAX_ERROR)
+        close_connection(conn)

@@ -9,6 +9,7 @@ ADDR = ('localhost', PORT)
 FORMAT = 'utf-8'
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 server.bind(ADDR)
 
 
